@@ -37,23 +37,37 @@ if [[ ${EL_MINIMAL_ADDONS} = "False" ]]; then
     printf "${EL_HOME}/addons/MathBenTech_scrummer," >> ${EL_CONFIG_FILE}
     printf "${EL_HOME}/addons/Numigi_odoo-partner-addons," >> ${EL_CONFIG_FILE}
     printf "${EL_HOME}/addons/Numigi_odoo-web-addons," >> ${EL_CONFIG_FILE}
+    printf "${EL_HOME}/addons/OCA_account-invoicing," >> ${EL_CONFIG_FILE}
     printf "${EL_HOME}/addons/OCA_contract," >> ${EL_CONFIG_FILE}
+    printf "${EL_HOME}/addons/OCA_e-commerce," >> ${EL_CONFIG_FILE}
+    printf "${EL_HOME}/addons/OCA_field-service," >> ${EL_CONFIG_FILE}
     printf "${EL_HOME}/addons/OCA_geospatial," >> ${EL_CONFIG_FILE}
     printf "${EL_HOME}/addons/OCA_helpdesk," >> ${EL_CONFIG_FILE}
+    printf "${EL_HOME}/addons/OCA_hr," >> ${EL_CONFIG_FILE}
+    printf "${EL_HOME}/addons/OCA_knowledge," >> ${EL_CONFIG_FILE}
+    printf "${EL_HOME}/addons/OCA_multi-company," >> ${EL_CONFIG_FILE}
+    printf "${EL_HOME}/addons/OCA_partner-contact," >> ${EL_CONFIG_FILE}
+    printf "${EL_HOME}/addons/OCA_project," >> ${EL_CONFIG_FILE}
+    printf "${EL_HOME}/addons/OCA_sale-workflow," >> ${EL_CONFIG_FILE}
     printf "${EL_HOME}/addons/OCA_server-auth," >> ${EL_CONFIG_FILE}
     printf "${EL_HOME}/addons/OCA_server-brand," >> ${EL_CONFIG_FILE}
     printf "${EL_HOME}/addons/OCA_server-tools," >> ${EL_CONFIG_FILE}
     printf "${EL_HOME}/addons/OCA_server-ux," >> ${EL_CONFIG_FILE}
     printf "${EL_HOME}/addons/OCA_social," >> ${EL_CONFIG_FILE}
+    printf "${EL_HOME}/addons/OCA_vertical-association," >> ${EL_CONFIG_FILE}
     printf "${EL_HOME}/addons/OCA_website," >> ${EL_CONFIG_FILE}
+    printf "${EL_HOME}/addons/ORE_erplibre-addons-ore," >> ${EL_CONFIG_FILE}
+    printf "${EL_HOME}/addons/Smile-SA_odoo_addons," >> ${EL_CONFIG_FILE}
     printf "${EL_HOME}/addons/TechnoLibre_odoo-code-generator," >> ${EL_CONFIG_FILE}
     printf "${EL_HOME}/addons/TechnoLibre_odoo-code-generator-template," >> ${EL_CONFIG_FILE}
     printf "${EL_HOME}/addons/ajepe_odoo-addons," >> ${EL_CONFIG_FILE}
     printf "${EL_HOME}/addons/muk-it_muk_base," >> ${EL_CONFIG_FILE}
+    printf "${EL_HOME}/addons/muk-it_muk_dms," >> ${EL_CONFIG_FILE}
     printf "${EL_HOME}/addons/muk-it_muk_misc," >> ${EL_CONFIG_FILE}
     printf "${EL_HOME}/addons/muk-it_muk_web," >> ${EL_CONFIG_FILE}
     printf "${EL_HOME}/addons/muk-it_muk_website," >> ${EL_CONFIG_FILE}
     printf "${EL_HOME}/addons/odoo_design-themes," >> ${EL_CONFIG_FILE}
+    printf "${EL_HOME}/addons/odooaktiv_product_rating_app," >> ${EL_CONFIG_FILE}
     printf "${EL_HOME}/script/OCA_maintainer-tools," >> ${EL_CONFIG_FILE}
 fi
 printf "\n" >> "${EL_CONFIG_FILE}"

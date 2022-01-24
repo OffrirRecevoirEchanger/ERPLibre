@@ -7,6 +7,110 @@ LOG_FILE := ./.venv/make_test.log
 .PHONY: all
 all: doc
 
+######################
+#  ORE installation  #
+######################
+.PHONY: ore_test_install_all
+ore_test_install_all:
+	parallel ::: "./script/make.sh ore_install_default_theme" "./script/make.sh ore_install"
+
+.PHONY: ore_install_default_theme
+ore_install_default_theme:
+	./script/database/db_restore.py --database ore_default_theme --image erplibre_website_crm
+	./script/addons/install_addons.sh ore_default_theme ore,website_ore,ore_data,website_chat_ore,website_no_crawler,smile_website_login_as,base_fontawesome,demo_website_ore,demo_ore,demo_website_chat_ore
+
+.PHONY: ore_init
+ore_init:
+	echo "ORE init"
+	echo "Sorry for your lost data"
+	echo "Generate repository"
+	./script/manifest/update_manifest_local_dev.sh "-g base,code_generator,image_db,ORE,ore_prod"
+	echo "Generate new fast configuration repo"
+	./script/git/git_repo_update_group.py --group base,code_generator,ORE,ore_prod
+	echo "Generate configuration"
+	./script/generate_config.sh
+	./script/git/git_change_remote_https_to_git.py
+
+.PHONY: ore_pre_install
+ore_pre_install:
+	poetry add humanize==4.6.0
+
+.PHONY: ore_install
+ore_install:
+	./script/database/db_restore.py --database ore --image erplibre_website_crm
+	./script/addons/install_addons.sh ore ore,website_ore,ore_data,ore_approbation,website_chat_ore,website_no_crawler,smile_website_login_as,base_fontawesome
+	./script/addons/install_addons_theme.sh ore theme_ore
+
+.PHONY: ore_install_demo
+ore_install_demo:
+	./script/database/db_restore.py --database ore_demo --image erplibre_website_crm
+	./script/addons/install_addons.sh ore_demo ore,website_ore,ore_data,ore_approbation,website_chat_ore,website_no_crawler,smile_website_login_as,base_fontawesome,demo_website_ore,demo_ore,demo_website_chat_ore,restful,website_event_sale
+	./script/addons/install_addons_theme.sh ore_demo theme_ore
+
+.PHONY: ore_demo_entreprise_install
+ore_demo_entreprise_install:
+	./script/database/db_restore.py --database ore_demo_business --image erplibre_website_crm
+	./script/addons/install_addons.sh ore_demo_business ore,sale_ore,website_no_crawler,smile_website_login_as,base_fontawesome,website_sale,website_sale_comparison,website_sale_delivery,website_sale_digital,website_sale_management,website_sale_stock,website_sale_wishlist,website_sale_attribute_filter_category,website_sale_attribute_filter_order,website_sale_attribute_filter_price,website_sale_cart_selectable,website_sale_category_description,website_sale_product_sort,website_sale_stock_available_display,website_sale_suggest_create_account,website_snippet_carousel_product,website_snippet_product_category,product_rating_review,sale_fixed_discount
+	./script/addons/install_addons_theme.sh ore_demo_business theme_ore
+
+.PHONY: ore_stage_debut_4_mai_2024
+ore_stage_debut_4_mai_2024:
+	# Note, use docker technolibre/erplibre:1.5.0_1f40c56
+	./script/database/db_restore.py --database ore_prod --image ore_2024-05-04_15-59-00
+	./script/addons/install_addons_dev.sh ore_prod ore,website_event_sale,website_blog,website_chat_ore
+	./script/addons/update_prod_to_dev.sh ore_prod
+	./script/addons/install_addons.sh ore_prod ore_prod_mai_2024
+	./script/addons/uninstall_addons.sh ore_prod ore_prod_mai_2024
+	#./.venv/bin/python3 ./odoo/odoo-bin db --backup --database ore_prod --restore_image ore_2024-03-03_08-11-49_stage
+	./script/database/db_restore.py --clean_cache
+
+.PHONY: ore_stage_debut_4_jul_2024
+ore_stage_debut_4_jul_2024:
+	# Note, use docker technolibre/erplibre:1.5.0_1f40c56
+	./script/database/db_restore.py --database ore_prod --image ore_2024-07-06_07-34-55
+	./script/addons/install_addons_dev.sh ore_prod ore,website_chat_ore,muk_web_theme
+	./script/addons/update_prod_to_dev.sh ore_prod
+	./script/addons/install_addons.sh ore_prod ore_prod_jul_2024
+	./script/addons/uninstall_addons.sh ore_prod ore_prod_jul_2024
+	#./.venv/bin/python3 ./odoo/odoo-bin db --backup --database ore_prod --restore_image ore_2024-03-03_08-11-49_stage
+	./script/database/db_restore.py --clean_cache
+
+.PHONY: ore_update_website
+ore_update_website:
+	./script/addons/install_addons_dev.sh ore_prod website_ore,website_chat_ore
+
+.PHONY: ore_update_ore
+ore_update_ore:
+	./script/addons/install_addons_dev.sh ore_prod ore
+
+.PHONY: ore_update_data
+ore_update_data:
+	./script/addons/install_addons_dev.sh ore_prod ore_data
+
+.PHONY: ore_update_all
+ore_update_all:
+	./script/addons/install_addons_dev.sh ore_prod ore,ore_data,website_ore
+
+.PHONY: ore_run
+ore_run:
+	./run.sh -d ore_prod
+
+.PHONY: ore_test_selenium
+ore_test_selenium:
+	./script/selenium/web_login.py --open_dashboard --default_email_auth test --default_password_auth test --ore_test
+
+.PHONY: ore_test_selenium_dark
+ore_test_selenium_white:
+	./script/selenium/web_login.py --open_dashboard --default_email_auth test --default_password_auth test --selenium_video_auto_play_video --ore_test  --no_dark_mode
+
+.PHONY: ore_test_selenium_video
+ore_test_selenium_video:
+	./script/selenium/web_login.py --open_dashboard --record_mode --default_email_auth test --default_password_auth test --selenium_video_auto_play_video --ore_test --no_dark_mode
+
+.PHONY: ore_test_selenium_video_dark
+ore_test_selenium_video_dark:
+	./script/selenium/web_login.py --open_dashboard --record_mode --default_email_auth test --default_password_auth test --selenium_video_auto_play_video --ore_test
+
 #########
 # Robot #
 #########
@@ -976,7 +1080,7 @@ open_terminal:
 ############
 .PHONY: format
 format:
-	parallel ::: "./script/make.sh format_code_generator" "./script/make.sh format_code_generator_template" "./script/make.sh format_script" "./script/make.sh format_erplibre_addons" "./script/make.sh format_supported_addons"
+	parallel ::: "./script/make.sh format_code_generator" "./script/make.sh format_code_generator_template" "./script/make.sh format_script" "./script/make.sh format_erplibre_addons" "./script/make.sh format_supported_addons format_ore"
 
 .PHONY: format_code_generator
 format_code_generator:
@@ -1001,6 +1105,14 @@ format_supported_addons:
 	.venv/bin/isort --profile black -l 79 ./addons/MathBenTech_odoo-business-spending-management-quebec-canada/
 	./script/maintenance/black.sh ./addons/MathBenTech_odoo-business-spending-management-quebec-canada/
 	#./script/maintenance/prettier_xml.sh ./addons/MathBenTech_erplibre-family-management/
+
+.PHONY: format_ore
+format_ore:
+	parallel ::: "./script/maintenance/format_python.sh ./addons/ORE_erplibre-addons-ore" "find ./addons/ORE_erplibre-addons-ore/ -type f -name \"*css\"|parallel ./script/maintenance/prettier.sh {}" "find ./addons/ORE_erplibre-addons-ore/ -type f -name \"*.xml\"|parallel ./script/maintenance/prettier_xml.sh {}"
+	#.venv/bin/isort --profile black -l 79 ./addons/ORE_erplibre-addons-ore
+	#./script/maintenance/black.sh ./addons/ORE_erplibre-addons-ore
+	#find ./addons/ORE_erplibre-addons-ore/ -type f -name "*css"|parallel ./script/maintenance/prettier.sh {}
+	#find ./addons/ORE_erplibre-addons-ore/ -type f -name "*.xml"|parallel ./script/maintenance/prettier_xml.sh {}
 
 .PHONY: format_code_generator_template
 format_code_generator_template:
@@ -1175,6 +1287,12 @@ config_gen_all:
 .PHONY: config_gen_code_generator
 config_gen_code_generator:
 	./script/git/git_repo_update_group.py --group base,code_generator
+	./script/generate_config.sh
+
+# generate config repo ore
+.PHONY: config_gen_ore
+config_gen_ore:
+	./script/git/git_repo_update_group.py --group base,code_generator,ORE
 	./script/generate_config.sh
 
 # generate config repo image_db

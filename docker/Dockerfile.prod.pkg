@@ -1,6 +1,6 @@
 FROM technolibre/erplibre-base:1.5.0
 
-ENV REPO_MANIFEST_URL https://github.com/ERPLibre/ERPLibre
+ENV REPO_MANIFEST_URL https://github.com/OffrirRecevoirEchanger/ERPLibre
 ARG WORKING_BRANCH
 ARG WORKING_HASH
 ENV BRANCH_ERPLIBRE $WORKING_BRANCH
@@ -20,7 +20,7 @@ RUN cd ; mkdir -p .bin/ && \
     git config --global color.ui false && \
     git config --global user.email "foo@bar.io" && \
     git config --global user.name "Foo Bar" && \
-    if [ "$BRANCH_ERPLIBRE" = "HEAD" ]; then git clone $REPO_MANIFEST_URL $ODOO_PREFIX ; else git clone $REPO_MANIFEST_URL -b $BRANCH_ERPLIBRE $ODOO_PREFIX; fi && \
+    if [ "$BRANCH_ERPLIBRE" = "HEAD" ]; then git clone https://github.com/OffrirRecevoirEchanger/ERPLibre $ODOO_PREFIX ; else git clone https://github.com/OffrirRecevoirEchanger/ERPLibre -b ore $ODOO_PREFIX; fi && \
     cd $ODOO_PREFIX && \
     # fatal: detected dubious ownership in repository at '/ERPLibre'
     git config --global --add safe.directory /ERPLibre && \

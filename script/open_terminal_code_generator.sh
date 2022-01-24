@@ -4,6 +4,7 @@ working_path=$(readlink -f .)
 paths=(
   "${working_path}/"
   "${working_path}/"
+  "${working_path}/addons/ORE_erplibre-addons-ore"
   "${working_path}/addons/ERPLibre_erplibre_addons"
   "${working_path}/addons/TechnoLibre_odoo-code-generator"
   "${working_path}/addons/TechnoLibre_odoo-code-generator-template"
