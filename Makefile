@@ -97,19 +97,35 @@ ore_run:
 
 .PHONY: ore_test_selenium
 ore_test_selenium:
-	./script/selenium/web_login.py --open_dashboard --default_email_auth test --default_password_auth test --ore_test
+	./script/selenium/selenium_ore.py --open_dashboard --default_email_auth test --default_password_auth test --ore_test
+
+.PHONY: ore_test_selenium_not_private
+ore_test_selenium_not_private:
+	./script/selenium/selenium_ore.py --not_private_mode --open_dashboard --default_email_auth test --default_password_auth test --ore_test
 
 .PHONY: ore_test_selenium_dark
 ore_test_selenium_white:
-	./script/selenium/web_login.py --open_dashboard --default_email_auth test --default_password_auth test --selenium_video_auto_play_video --ore_test  --no_dark_mode
+	./script/selenium/selenium_ore.py --open_dashboard --default_email_auth test --default_password_auth test --selenium_video_auto_play_video --ore_test  --no_dark_mode
 
 .PHONY: ore_test_selenium_video
 ore_test_selenium_video:
-	./script/selenium/web_login.py --open_dashboard --record_mode --default_email_auth test --default_password_auth test --selenium_video_auto_play_video --ore_test --no_dark_mode
+	./script/selenium/selenium_ore.py --open_dashboard --record_mode --default_email_auth test --default_password_auth test --selenium_video_auto_play_video --ore_test --no_dark_mode
 
 .PHONY: ore_test_selenium_video_dark
 ore_test_selenium_video_dark:
-	./script/selenium/web_login.py --open_dashboard --record_mode --default_email_auth test --default_password_auth test --selenium_video_auto_play_video --ore_test
+	./script/selenium/selenium_ore.py --open_dashboard --record_mode --default_email_auth test --default_password_auth test --selenium_video_auto_play_video --ore_test
+
+.PHONY: ore_test_selenium_video_dark_not_private
+ore_test_selenium_video_dark_not_private:
+	./script/selenium/selenium_ore.py --not_private_mode --open_dashboard --record_mode --default_email_auth test --default_password_auth test --selenium_video_auto_play_video --video_suffix not_private_mode --ore_test
+
+.PHONY: ore_test_combo
+ore_test_combo:
+	parallel ::: "./script/make.sh ore_test_selenium_video_dark" "./script/make.sh ore_test_selenium_video_dark_not_private"
+
+.PHONY: ore_test_combo_video
+ore_test_combo_video:
+	parallel ::: "./script/make.sh ore_test_selenium_video_dark" "./script/make.sh ore_test_selenium_video_dark_not_private"
 
 #########
 # Robot #
