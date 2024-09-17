@@ -18,7 +18,10 @@ class SeleniumLib(object):
     def __init__(self, config):
         self.config = config
         self.video_recorder = None
-        self.filename = "video_" + time.strftime("%Y_%m_%d-%H_%M_%S") + ".webm"
+        if self.config.video_suffix:
+            self.filename = f"video_{self.config.video_suffix}_" + time.strftime("%Y_%m_%d-%H_%M_%S") + ".webm"
+        else:
+            self.filename = "video_" + time.strftime("%Y_%m_%d-%H_%M_%S") + ".webm"
         self.driver = None
 
     def configure(self):
@@ -430,6 +433,11 @@ def fill_parser(parser):
         "--record_mode",
         action="store_true",
         help="Start recording (not finish to be implemented).",
+    )
+    parser.add_argument(
+        "--video_suffix",
+        default="",
+        help="Will modify video name.",
     )
     group_record.add_argument(
         "--selenium_video_time_waiting_end",
