@@ -32,19 +32,15 @@ def scenario_join_new_clan(config, selenium_tool):
     selenium_tool.inject_cursor()
     selenium_tool.click_with_mouse_move(By.CLASS_NAME, "o_footer")
     # Wait new clan is created by notification, need to compare from last clan
-    all_element_init = selenium_tool.get_all_element(
+    selenium_tool.wait_new_element_and_click(
         by=By.CLASS_NAME, value="container_explorer"
     )
-    len_all_element_init = len(all_element_init)
-    len_all_element = len_all_element_init
-    while len_all_element_init == len_all_element:
-        time.sleep(1)
-        class_value = "container_explorer"
-        all_element = selenium_tool.get_all_element(
-            by=By.CLASS_NAME, value=class_value
-        )
-        len_all_element = len(all_element)
-        print(f"Waiting after class value {class_value}")
+
+    scenario_create_new_account_with_random_user(config, selenium_tool)
+
+    selenium_tool.click_with_mouse_move(by=By.ID, value="btn_ask_join_clan")
+
+    # TODO wait receive invitation, and do message clavardage
     print("ok")
 
 
@@ -55,34 +51,7 @@ def scenario_create_clan(config, selenium_tool):
         By.XPATH, "/html/body/div[1]/main/div/section[3]/div/div/div[2]/div/a"
     )
 
-    # Click no account
-    selenium_tool.inject_cursor()
-    selenium_tool.click_with_mouse_move(
-        By.XPATH, "/html/body/div[1]/main/div/form/div[3]/div[1]/a[1]"
-    )
-
-    # Trouvez les éléments du formulaire
-    selenium_tool.inject_cursor()
-
-    # Remplissez le courriel et le mot de passe
-    first_name = selenium_tool.get_french_word_no_space_no_accent()
-    password = first_name.lower()
-    second_name = selenium_tool.get_french_word_no_space_no_accent()
-    full_name = f"{first_name} {second_name}"
-    domain = selenium_tool.get_french_word_no_space_no_accent().lower()
-
-    selenium_tool.input_text_with_mouse_move(
-        By.NAME, "login", f"{password}@{domain}.com"
-    )
-    selenium_tool.input_text_with_mouse_move(By.NAME, "name", full_name)
-    selenium_tool.input_text_with_mouse_move(By.NAME, "password", password)
-    selenium_tool.input_text_with_mouse_move(
-        By.NAME, "confirm_password", password
-    )
-    selenium_tool.click_with_mouse_move(By.NAME, "accept_global_policy")
-    selenium_tool.click_with_mouse_move(
-        By.XPATH, "/html/body/div[1]/main/div/form/div[6]/button"
-    )
+    scenario_create_new_account_with_random_user(config, selenium_tool)
 
     # Création du clan
     # Préparation des informations
@@ -190,6 +159,15 @@ def scenario_create_clan(config, selenium_tool):
         clan_button_xpath,
         timeout=5,
         no_scroll=True,
+    )
+
+
+def scenario_create_new_account_with_random_user(config, selenium_tool):
+    def action_before():
+        selenium_tool.click_with_mouse_move(By.NAME, "accept_global_policy")
+
+    selenium_tool.scenario_create_new_account_with_random_user(
+        show_cursor=True, def_action_before_submit=action_before
     )
 
 

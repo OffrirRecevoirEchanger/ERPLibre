@@ -6,6 +6,7 @@ import sys
 import time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.firefox.service import Service
@@ -183,6 +184,22 @@ class SeleniumLib(object):
 
         return ele
 
+    def wait_new_element_and_click(
+        self, by: str = By.ID, value: str = None, delay_wait=1, timeout=5
+    ):
+        all_element_init = self.get_all_element(by=by, value=value)
+        len_all_element_init = len(all_element_init)
+        len_all_element = len_all_element_init
+        all_element = []
+        while len_all_element_init == len_all_element:
+            time.sleep(delay_wait)
+            all_element = self.get_all_element(by=by, value=value)
+            len_all_element = len(all_element)
+            print(f"Waiting {delay_wait} seconds after value '{value}'")
+        new_element = all_element[-1]
+        self.click_with_mouse_move(element=new_element, no_scroll=True)
+        return new_element
+
     def click_with_mouse_move(
         self,
         by: str = By.ID,
@@ -191,9 +208,13 @@ class SeleniumLib(object):
         no_scroll: bool = False,
         viewport_ele_by: str = By.ID,
         viewport_ele_value: str = None,
+        element: WebElement = None,
     ):
         # ele = self.driver.find_element(by, value)
-        ele = self.get_element(by, value, timeout)
+        if element:
+            ele = element
+        else:
+            ele = self.get_element(by, value, timeout)
         if not no_scroll:
             viewport_ele = None
             if viewport_ele_value:
@@ -204,14 +225,17 @@ class SeleniumLib(object):
             ActionChains(self.driver).move_to_element(ele).perform()
         time.sleep(self.config.selenium_default_delay)
         wait = WebDriverWait(self.driver, timeout)
-        button = wait.until(
-            EC.element_to_be_clickable(
-                (
-                    by,
-                    value,
+        if element:
+            button = wait.until(EC.element_to_be_clickable(element))
+        else:
+            button = wait.until(
+                EC.element_to_be_clickable(
+                    (
+                        by,
+                        value,
+                    )
                 )
             )
-        )
         button.click()
 
     def input_text_with_mouse_move(
@@ -366,6 +390,39 @@ class SeleniumLib(object):
         });
         """
         self.driver.execute_script(cursor_script)
+
+    def scenario_create_new_account_with_random_user(
+        self, show_cursor=False, def_action_before_submit=None
+    ):
+        # Click no account
+        if show_cursor:
+            self.inject_cursor()
+        self.click_with_mouse_move(
+            By.XPATH, "/html/body/div[1]/main/div/form/div[3]/div[1]/a[1]"
+        )
+
+        # Trouvez les éléments du formulaire
+        if show_cursor:
+            self.inject_cursor()
+
+        # Remplissez le courriel et le mot de passe
+        first_name = self.get_french_word_no_space_no_accent()
+        password = first_name.lower()
+        second_name = self.get_french_word_no_space_no_accent()
+        full_name = f"{first_name} {second_name}"
+        domain = self.get_french_word_no_space_no_accent().lower()
+
+        self.input_text_with_mouse_move(
+            By.NAME, "login", f"{password}@{domain}.com"
+        )
+        self.input_text_with_mouse_move(By.NAME, "name", full_name)
+        self.input_text_with_mouse_move(By.NAME, "password", password)
+        self.input_text_with_mouse_move(By.NAME, "confirm_password", password)
+        if def_action_before_submit:
+            def_action_before_submit()
+        self.click_with_mouse_move(
+            By.XPATH, "/html/body/div[1]/main/div/form/div[6]/button"
+        )
 
     def open_tab(self, url):
         # Open a new window
