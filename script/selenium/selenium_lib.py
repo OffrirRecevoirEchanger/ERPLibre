@@ -19,9 +19,15 @@ class SeleniumLib(object):
         self.config = config
         self.video_recorder = None
         if self.config.video_suffix:
-            self.filename = f"video_{self.config.video_suffix}_" + time.strftime("%Y_%m_%d-%H_%M_%S") + ".webm"
+            self.filename = (
+                f"video_{self.config.video_suffix}_"
+                + time.strftime("%Y_%m_%d-%H_%M_%S")
+                + ".webm"
+            )
         else:
-            self.filename = "video_" + time.strftime("%Y_%m_%d-%H_%M_%S") + ".webm"
+            self.filename = (
+                "video_" + time.strftime("%Y_%m_%d-%H_%M_%S") + ".webm"
+            )
         self.driver = None
 
     def configure(self):
