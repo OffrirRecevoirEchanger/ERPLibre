@@ -170,6 +170,19 @@ class SeleniumLib(object):
 
         return ele[0]
 
+    def get_all_element(self, by: str = By.ID, value: str = None, timeout=5):
+        wait = WebDriverWait(self.driver, timeout)
+        ele = wait.until(
+            EC.visibility_of_all_elements_located(
+                (
+                    by,
+                    value,
+                )
+            )
+        )
+
+        return ele
+
     def click_with_mouse_move(
         self,
         by: str = By.ID,

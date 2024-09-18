@@ -21,6 +21,34 @@ def run(config, selenium_tool):
     selenium_tool.open_tab("localhost:8069")
     time.sleep(0.5)
 
+    if config.scenario == "create_clan":
+        scenario_create_clan(config, selenium_tool)
+    if config.scenario == "join_new_clan":
+        scenario_join_new_clan(config, selenium_tool)
+
+
+def scenario_join_new_clan(config, selenium_tool):
+    # Click to Button label Crée ton clan
+    selenium_tool.inject_cursor()
+    selenium_tool.click_with_mouse_move(By.CLASS_NAME, "o_footer")
+    # Wait new clan is created by notification, need to compare from last clan
+    all_element_init = selenium_tool.get_all_element(
+        by=By.CLASS_NAME, value="container_explorer"
+    )
+    len_all_element_init = len(all_element_init)
+    len_all_element = len_all_element_init
+    while len_all_element_init == len_all_element:
+        time.sleep(1)
+        class_value = "container_explorer"
+        all_element = selenium_tool.get_all_element(
+            by=By.CLASS_NAME, value=class_value
+        )
+        len_all_element = len(all_element)
+        print(f"Waiting after class value {class_value}")
+    print("ok")
+
+
+def scenario_create_clan(config, selenium_tool):
     # Click to Button label Crée ton clan
     selenium_tool.inject_cursor()
     selenium_tool.click_with_mouse_move(
@@ -171,6 +199,11 @@ def fill_parser(parser):
         "--ore_test",
         action="store_true",
         help="ore test",
+    )
+    ore_group.add_argument(
+        "--scenario",
+        default="create_clan",
+        help="Scenario to run",
     )
 
 
