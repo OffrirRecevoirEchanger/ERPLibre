@@ -75,6 +75,13 @@ ore_stage_debut_4_jul_2024:
 	#./.venv/bin/python3 ./odoo/odoo-bin db --backup --database ore_prod --restore_image ore_2024-03-03_08-11-49_stage
 	./script/database/db_restore.py --clean_cache
 
+.PHONY: ore_stage_debut_17_sept_2024
+ore_stage_debut_17_sept_2024:
+	./script/database/db_restore.py --database ore_prod --image ore_2024-09-17_19-00-53
+	./script/addons/install_addons_dev.sh ore_prod ore
+	./script/addons/update_prod_to_dev.sh ore_prod
+	./script/database/db_restore.py --clean_cache
+
 .PHONY: ore_update_website
 ore_update_website:
 	./script/addons/install_addons_dev.sh ore_prod website_ore,website_chat_ore
