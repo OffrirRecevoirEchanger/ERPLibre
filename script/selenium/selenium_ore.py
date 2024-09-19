@@ -21,6 +21,7 @@ def run(config, selenium_tool):
     selenium_tool.open_tab("localhost:8069")
     time.sleep(0.5)
 
+    selenium_tool.start_record()
     if config.scenario == "create_clan":
         scenario_create_clan(config, selenium_tool)
     if config.scenario == "join_new_clan":
@@ -199,7 +200,6 @@ def main():
     # Instance selenium tool
     selenium_tool = selenium_lib.SeleniumLib(args)
     selenium_tool.configure()
-    selenium_tool.start_record()
     # Execute
     web_login.run(args, selenium_tool)
     run(args, selenium_tool)

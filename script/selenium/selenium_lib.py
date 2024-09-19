@@ -389,7 +389,17 @@ class SeleniumLib(object):
           cursor.style.top = e.pageY - 5 + 'px';
         });
         """
-        self.driver.execute_script(cursor_script)
+        try:
+            try:
+                self.driver.execute_script(cursor_script)
+            except Exception as e:
+                time.sleep(1)
+                print("Error execute script cursor, wait 1 second")
+                self.driver.execute_script(cursor_script)
+        except Exception as e:
+            time.sleep(3)
+            print("Error execute script cursor, wait 3 second")
+            self.driver.execute_script(cursor_script)
 
     def scenario_create_new_account_with_random_user(
         self, show_cursor=False, def_action_before_submit=None
@@ -453,6 +463,7 @@ class SeleniumLib(object):
             time.sleep(self.config.selenium_video_time_waiting_end)
             self.video_recorder.stop()
             print("End of recording video")
+            print(self.filename)
 
             if self.config.selenium_video_auto_play_video:
                 print(f"Play video {self.filename}")

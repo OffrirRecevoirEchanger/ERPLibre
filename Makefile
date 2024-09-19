@@ -78,7 +78,7 @@ ore_stage_debut_4_jul_2024:
 .PHONY: ore_stage_debut_17_sept_2024
 ore_stage_debut_17_sept_2024:
 	./script/database/db_restore.py --database ore_prod --image ore_2024-09-17_19-00-53
-	./script/addons/install_addons_dev.sh ore_prod ore
+	./script/addons/install_addons_dev.sh ore_prod ore,website_chat_ore
 	./script/addons/update_prod_to_dev.sh ore_prod
 	./script/database/db_restore.py --clean_cache
 
@@ -106,6 +106,22 @@ ore_run:
 ore_test_selenium:
 	./script/selenium/selenium_ore.py --open_dashboard --default_email_auth test --default_password_auth test --ore_test
 
+.PHONY: ore_test_selenium_scenario_1
+ore_test_selenium_scenario_1:
+	./script/selenium/selenium_ore.py --open_dashboard --default_email_auth test --default_password_auth test --ore_test --scenario=create_clan
+
+.PHONY: ore_test_selenium_scenario_2
+ore_test_selenium_scenario_2:
+	./script/selenium/selenium_ore.py --not_private_mode --open_dashboard --default_email_auth test --default_password_auth test --ore_test --scenario=join_new_clan
+
+.PHONY: ore_test_selenium_scenario_record_1
+ore_test_selenium_scenario_record_1:
+	./script/selenium/selenium_ore.py --open_dashboard --default_email_auth test --default_password_auth test --ore_test --scenario=create_clan --no_dark_mode --record_mode
+
+.PHONY: ore_test_selenium_scenario_record_2
+ore_test_selenium_scenario_record_2:
+	./script/selenium/selenium_ore.py --not_private_mode --open_dashboard --default_email_auth test --default_password_auth test --ore_test --scenario=join_new_clan --video_suffix not_private_mode --no_dark_mode --record_mode
+
 .PHONY: ore_test_selenium_not_private
 ore_test_selenium_not_private:
 	./script/selenium/selenium_ore.py --not_private_mode --open_dashboard --default_email_auth test --default_password_auth test --ore_test
@@ -128,11 +144,12 @@ ore_test_selenium_video_dark_not_private:
 
 .PHONY: ore_test_combo
 ore_test_combo:
-	parallel ::: "./script/make.sh ore_test_selenium_video_dark" "./script/make.sh ore_test_selenium_video_dark_not_private"
+	parallel ::: "./script/make.sh ore_test_selenium_scenario_1" "./script/make.sh ore_test_selenium_scenario_2"
 
 .PHONY: ore_test_combo_video
 ore_test_combo_video:
-	parallel ::: "./script/make.sh ore_test_selenium_video_dark" "./script/make.sh ore_test_selenium_video_dark_not_private"
+	parallel ::: "./script/make.sh ore_test_selenium_scenario_record_1" "./script/make.sh ore_test_selenium_scenario_record_2"
+	./script/selenium/combine_video.sh
 
 #########
 # Robot #
