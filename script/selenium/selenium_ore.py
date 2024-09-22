@@ -33,16 +33,45 @@ def scenario_join_new_clan(config, selenium_tool):
     selenium_tool.inject_cursor()
     selenium_tool.click_with_mouse_move(By.CLASS_NAME, "o_footer")
     # Wait new clan is created by notification, need to compare from last clan
-    selenium_tool.wait_new_element_and_click(
+    selenium_tool.wait_add_new_element_and_click(
         by=By.CLASS_NAME, value="container_explorer"
     )
 
     scenario_create_new_account_with_random_user(config, selenium_tool)
 
+    # Join a clan
+    selenium_tool.inject_cursor()
     selenium_tool.click_with_mouse_move(by=By.ID, value="btn_ask_join_clan")
 
-    # TODO wait receive invitation, and do message clavardage
-    print("ok")
+    # Wait to be invited, the page will auto-refresh and the button dialog will appear
+    selenium_tool.wait_new_element_and_click(
+        by=By.ID, value="btn_start_clavardage_from_clan", inject_cursor=True
+    )
+
+    # Send a message before receive it
+    selenium_tool.inject_cursor()
+    new_element_chat = selenium_tool.wait_add_new_element(
+        by=By.CLASS_NAME, value="chat_msg"
+    )
+
+    rw = RandomWordFr()
+    dct_contain = rw.get()
+    word_name = dct_contain.get("word")
+    word_definition = dct_contain.get("definition").replace("\n", " ")
+    msg = (
+        f"Je voulais te partager le mot «{word_name}» que j'ai appris"
+        f" aujourd'hui. {word_definition}"
+    )
+
+    selenium_tool.input_text_with_mouse_move(
+        By.ID, "input_text_chat", msg, no_scroll=True
+    )
+    selenium_tool.click_with_mouse_move(
+        By.CLASS_NAME,
+        "fa-send",
+        timeout=5,
+        no_scroll=True,
+    )
 
 
 def scenario_create_clan(config, selenium_tool):
@@ -161,6 +190,86 @@ def scenario_create_clan(config, selenium_tool):
         timeout=5,
         no_scroll=True,
     )
+
+    # Wait notification about adhesion clan and accept it
+    selenium_tool.inject_cursor()
+    selenium_tool.wait_increment_number_text_and_click(
+        by=By.ID, value="badge_notification_all_count"
+    )
+    selenium_tool.click_with_mouse_move(
+        By.ID,
+        "BtnTabNotifications",
+        timeout=5,
+        no_scroll=True,
+    )
+    all_url_link = selenium_tool.get_all_element(
+        By.NAME, "url_link_notification", timeout=5
+    )
+
+    first_link = all_url_link[0]
+    # Extract name
+    extract_text_link = first_link.text
+    first_char = extract_text_link.find("«")
+    second_char = extract_text_link.find("»")
+    extract_user_name_link = extract_text_link[first_char + 1 : second_char]
+
+    selenium_tool.click_with_mouse_move(element=first_link)
+
+    selenium_tool.inject_cursor()
+    all_button_accept = selenium_tool.get_all_element(
+        By.NAME, "btn_accept_membre_demande_adhesion_clan", timeout=5
+    )
+
+    for button_ele in all_button_accept:
+        selenium_tool.click_with_mouse_move(element=button_ele)
+
+    # Time to chat with it
+    selenium_tool.inject_cursor()
+    selenium_tool.click_with_mouse_move(
+        by=By.ID, value="sub_menu_communaute_clan"
+    )
+
+    selenium_tool.inject_cursor()
+    selenium_tool.click_with_mouse_move(
+        by=By.ID, value="btn_start_clavardage_from_clan"
+    )
+
+    selenium_tool.inject_cursor()
+    selenium_tool.input_text_with_mouse_move(
+        By.ID,
+        "input_text_chat",
+        "Nous avons notre premier nouveau membre, bienvenue"
+        f" {extract_user_name_link}!",
+        no_scroll=no_scroll,
+    )
+    selenium_tool.click_with_mouse_move(
+        By.CLASS_NAME,
+        "fa-send",
+        timeout=5,
+        no_scroll=True,
+    )
+
+    new_element_chat = selenium_tool.wait_add_new_element(
+        by=By.CLASS_NAME, value="chat_msg"
+    )
+
+    rw = RandomWordFr()
+    dct_contain = rw.get()
+    word_name = dct_contain.get("word")
+    word_definition = dct_contain.get("definition").replace("\n", " ")
+    msg = f"Et moi, le mot «{word_name}» - {word_definition}"
+
+    selenium_tool.input_text_with_mouse_move(
+        By.ID, "input_text_chat", msg, no_scroll=no_scroll
+    )
+    selenium_tool.click_with_mouse_move(
+        By.CLASS_NAME,
+        "fa-send",
+        timeout=5,
+        no_scroll=True,
+    )
+
+    # end
 
 
 def scenario_create_new_account_with_random_user(config, selenium_tool):

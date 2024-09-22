@@ -5,6 +5,7 @@ import os
 import sys
 import time
 from selenium import webdriver
+from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as EC
@@ -185,6 +186,51 @@ class SeleniumLib(object):
         return ele
 
     def wait_new_element_and_click(
+        self,
+        by: str = By.ID,
+        value: str = None,
+        delay_wait=1,
+        timeout=5,
+        inject_cursor=False,
+    ):
+        new_element = self.wait_new_element(
+            by=by, value=value, delay_wait=delay_wait, timeout=timeout
+        )
+        if new_element:
+            if inject_cursor:
+                self.inject_cursor()
+            self.click_with_mouse_move(element=new_element, no_scroll=True)
+        return new_element
+
+    def wait_new_element(
+        self,
+        by: str = By.ID,
+        value: str = None,
+        delay_wait=1,
+        timeout=5,
+        timeout_wait=None,
+    ):
+        element = None
+        # TODO support timeout_wait
+        while element is None:
+            time.sleep(delay_wait)
+            try:
+                element = self.get_element(by, value, timeout)
+            except TimeoutException as e:
+                pass
+            print(f"Waiting {delay_wait} seconds after value '{value}'")
+        return element
+
+    def wait_add_new_element_and_click(
+        self, by: str = By.ID, value: str = None, delay_wait=1, timeout=5
+    ):
+        new_element = self.wait_add_new_element(
+            by=by, value=value, delay_wait=delay_wait, timeout=timeout
+        )
+        self.click_with_mouse_move(element=new_element, no_scroll=True)
+        return new_element
+
+    def wait_add_new_element(
         self, by: str = By.ID, value: str = None, delay_wait=1, timeout=5
     ):
         all_element_init = self.get_all_element(by=by, value=value)
@@ -197,8 +243,23 @@ class SeleniumLib(object):
             len_all_element = len(all_element)
             print(f"Waiting {delay_wait} seconds after value '{value}'")
         new_element = all_element[-1]
-        self.click_with_mouse_move(element=new_element, no_scroll=True)
         return new_element
+
+    def wait_increment_number_text_and_click(
+        self, by: str = By.ID, value: str = None, delay_wait=1, timeout=5
+    ):
+        element_init = self.get_element(by=by, value=value, timeout=timeout)
+        actual_number = int(element_init.text)
+        number_goal = actual_number + 1
+        while actual_number < number_goal:
+            time.sleep(delay_wait)
+            element_goal = self.get_element(
+                by=by, value=value, timeout=timeout
+            )
+            actual_number = int(element_goal.text)
+            print(f"Waiting {delay_wait} seconds after value '{value}'")
+        self.click_with_mouse_move(element=element_init, no_scroll=True)
+        return element_init
 
     def click_with_mouse_move(
         self,
