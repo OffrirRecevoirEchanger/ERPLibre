@@ -514,6 +514,34 @@ class SeleniumLib(object):
     def start_record(self):
         # Démarrer l'enregistrement
         if self.config.record_mode:
+            # Sync before record
+            has_sync_error = False
+            if self.config.sync_file_record_read:
+                if not self.config.sync_file_record_write:
+                    print(
+                        "Error, cannot sync, missing 'sync_file_record_write'"
+                    )
+                    has_sync_error = True
+            if self.config.sync_file_record_write:
+                if not self.config.sync_file_record_read:
+                    print(
+                        "Error, cannot sync, missing 'sync_file_record_read'"
+                    )
+                    has_sync_error = True
+            if (
+                not has_sync_error
+                and self.config.sync_file_record_read
+                and self.config.sync_file_record_write
+            ):
+                # Do sync
+                file_name_1 = f"/tmp/erplibre_sync_temp_file{self.config.sync_file_record_write}"
+                file_name_2 = f"/tmp/erplibre_sync_temp_file{self.config.sync_file_record_read}"
+                with open(file_name_1, "w") as file:
+                    file.write(f"Recording {self.filename}\n")
+                while not os.path.exists(file_name_2):
+                    var_wait_time = 0.01
+                    print(f"File {self.filename} wait {var_wait_time} seconds")
+                    time.sleep(var_wait_time)
             self.video_recorder.start()
 
     def stop_record(self):
@@ -586,6 +614,22 @@ def fill_parser(parser):
         "--video_suffix",
         default="",
         help="Will modify video name.",
+    )
+    parser.add_argument(
+        "--sync_file_record_read",
+        default="",
+        help=(
+            "Will sync and check file from tmp before record, write before"
+            " read."
+        ),
+    )
+    parser.add_argument(
+        "--sync_file_record_write",
+        default="",
+        help=(
+            "Will sync and check file from tmp before record, write before"
+            " read."
+        ),
     )
     group_record.add_argument(
         "--selenium_video_time_waiting_end",

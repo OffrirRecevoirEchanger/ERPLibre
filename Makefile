@@ -1,11 +1,23 @@
 SHELL := /bin/bash
 LOG_FILE := ./.venv/make_test.log
+WORDS0 := elderberry fig grape
+WORDS1 := apple banana cherry date
+
 #############
 #  General  #
 #############
 # ALL
 .PHONY: all
 all: doc
+
+random_hash:
+	@word=$(shell echo $(WORDS) | tr ' ' '\n' | shuf -n 1); \
+	current_time=$$(date +'%Y-%m-%d %H:%M:%S.%3N'); \
+	input="$${word} $${current_time}"; \
+	hash=$$(echo "$$input" | sha256sum | awk '{print $$1}'); \
+	echo "Mot: $$word"; \
+	echo "Temps: $$current_time"; \
+	echo "Hash: $$hash"
 
 ######################
 #  ORE installation  #
@@ -78,8 +90,9 @@ ore_stage_debut_4_jul_2024:
 .PHONY: ore_stage_debut_17_sept_2024
 ore_stage_debut_17_sept_2024:
 	./script/database/db_restore.py --database ore_prod --image ore_2024-09-17_19-00-53
-	./script/addons/install_addons_dev.sh ore_prod ore,website_chat_ore
+	./script/addons/install_addons.sh ore_prod ore,website_chat_ore
 	./script/addons/update_prod_to_dev.sh ore_prod
+	#./script/addons/install_addons.sh ore_prod ore_dev
 	./script/database/db_restore.py --clean_cache
 
 .PHONY: ore_update_website
@@ -116,11 +129,11 @@ ore_test_selenium_scenario_2:
 
 .PHONY: ore_test_selenium_scenario_record_1
 ore_test_selenium_scenario_record_1:
-	./script/selenium/selenium_ore.py --open_dashboard --default_email_auth test --default_password_auth test --ore_test --scenario=create_clan --no_dark_mode --record_mode
+	./script/selenium/selenium_ore.py --open_dashboard --default_email_auth test --default_password_auth test --ore_test --no_dark_mode --record_mode --scenario=create_clan
 
 .PHONY: ore_test_selenium_scenario_record_2
 ore_test_selenium_scenario_record_2:
-	./script/selenium/selenium_ore.py --not_private_mode --open_dashboard --default_email_auth test --default_password_auth test --ore_test --scenario=join_new_clan --video_suffix not_private_mode --no_dark_mode --record_mode
+	./script/selenium/selenium_ore.py --not_private_mode --open_dashboard --default_email_auth test --default_password_auth test --ore_test --video_suffix not_private_mode --no_dark_mode --record_mode --scenario=join_new_clan
 
 .PHONY: ore_test_selenium_not_private
 ore_test_selenium_not_private:
@@ -148,7 +161,22 @@ ore_test_combo:
 
 .PHONY: ore_test_combo_video
 ore_test_combo_video:
-	parallel ::: "./script/make.sh ore_test_selenium_scenario_record_1" "./script/make.sh ore_test_selenium_scenario_record_2"
+	@word0=$(shell echo $(WORDS0) | tr ' ' '\n' | shuf -n 1); \
+	current_time0=$$(date +'%Y-%m-%d %H:%M:%S.%3N'); \
+	input0="$${word0} $${current_time0}"; \
+	hash0=$$(echo "$$input0" | sha256sum | awk '{print $$1}'); \
+	echo "Mot0: $$word0"; \
+	echo "Temps0: $$current_time0"; \
+	echo "Hash0: $$hash0"
+	@word1=$(shell echo $(WORDS1) | tr ' ' '\n' | shuf -n 1); \
+	current_time1=$$(date +'%Y-%m-%d %H:%M:%S.%3N'); \
+	input1="$${word1} $${current_time1}"; \
+	hash1=$$(echo "$$input1" | sha256sum | awk '{print $$1}'); \
+	echo "Mot1: $$word1"; \
+	echo "Temps1: $$current_time1"; \
+	echo "Hash1: $$hash1"
+	parallel ::: "./script/selenium/selenium_ore.py --open_dashboard --default_email_auth test --default_password_auth test --ore_test --no_dark_mode --record_mode --sync_file_record_read=$$hash0 --sync_file_record_write=$$hash1 --scenario=create_clan" "./script/selenium/selenium_ore.py --not_private_mode --open_dashboard --default_email_auth test --default_password_auth test --ore_test --video_suffix not_private_mode --no_dark_mode --record_mode --sync_file_record_read=$$hash1 --sync_file_record_write=$$hash0 --scenario=join_new_clan"
+	#parallel ::: "./script/make.sh ore_test_selenium_scenario_record_1" "./script/make.sh ore_test_selenium_scenario_record_2"
 	./script/selenium/combine_video.sh
 
 #########
