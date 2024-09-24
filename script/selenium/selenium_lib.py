@@ -78,6 +78,7 @@ class SeleniumLib(object):
 
         # Ajout de l'enregistrement
         if self.config.record_mode:
+            # Create recording
             new_path = os.path.normpath(
                 os.path.join(os.path.dirname(__file__), "..", "..")
             )
@@ -539,7 +540,7 @@ class SeleniumLib(object):
                 with open(file_name_1, "w") as file:
                     file.write(f"Recording {self.filename}\n")
                 while not os.path.exists(file_name_2):
-                    var_wait_time = 0.01
+                    var_wait_time = 0.001
                     print(f"File {self.filename} wait {var_wait_time} seconds")
                     time.sleep(var_wait_time)
             self.video_recorder.start()
