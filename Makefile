@@ -92,7 +92,15 @@ ore_stage_debut_17_sept_2024:
 	./script/database/db_restore.py --database ore_prod --image ore_2024-09-17_19-00-53
 	./script/addons/install_addons.sh ore_prod ore,website_chat_ore
 	./script/addons/update_prod_to_dev.sh ore_prod
-	#./script/addons/install_addons.sh ore_prod ore_dev
+	./script/addons/install_addons.sh ore_prod ore_dev
+	./script/database/db_restore.py --clean_cache
+
+.PHONY: ore_stage_debut_26_sept_2024
+ore_stage_debut_26_sept_2024:
+	./script/addons/install_addons.sh ore_prod ore,website_chat_ore
+	./script/database/db_restore.py --database ore_prod --image ore_2024-09-27_03-29-16
+	./script/addons/update_prod_to_dev.sh ore_prod
+	./script/addons/install_addons.sh ore_prod ore_dev
 	./script/database/db_restore.py --clean_cache
 
 .PHONY: ore_update_website
